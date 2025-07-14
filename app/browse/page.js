@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from "next/link"
 import { getApprovedContent } from "@/lib/content"
 import { GoogleAd } from "@/components/google-ad"
