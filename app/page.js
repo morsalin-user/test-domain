@@ -14,11 +14,14 @@ export default async function HomePage() {
             AuraVerse
           </div>
           <div className="flex items-center gap-2 md:gap-4">
-            <Link href="/browse" className="btn btn-ghost text-sm md:text-base">
+            {/* <Link href="/browse" className="btn btn-ghost text-sm md:text-base">
               Browse
             </Link>
             <Link href="/upload" className="btn btn-primary text-sm md:text-base">
               Upload
+            </Link> */}
+            <Link href="/admin" className="btn btn-primary text-sm md:text-base">
+              Admin
             </Link>
           </div>
         </div>
