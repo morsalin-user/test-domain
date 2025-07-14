@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
         <Script id="linkvertise-init" strategy="afterInteractive">
           {`
             linkvertise(1371134, {
-              whitelist: [],
+              whitelist: ["test-domain-nine.vercel.app"],
               blacklist: []
             });
           `}
