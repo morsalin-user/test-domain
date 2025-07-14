@@ -6,7 +6,7 @@ const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET
 const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN
 const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID
-const ADMIN_DISCORD_IDS = process.env.ADMIN_DISCORD_IDS.split(',')
+const ADMIN_DISCORD_IDS = ["1394197702748930120"]
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
