@@ -1,8 +1,15 @@
+"use client"
+
 import Link from "next/link"
 import { getContentById } from "@/lib/content"
 import { notFound } from "next/navigation"
-// import { LinkVertiseButton } from "@/components/linkvertise-button"
+import { LinkVertiseButton } from "@/components/linkvertise-button"
 import { GoogleAd } from "@/components/google-ad"
+import { DownloadTracker } from "@/components/download-tracker"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { LikeDislike } from "@/components/like-dislike"
+import { Comments } from "@/components/comments"
 
 export default async function ContentPage({ params }) {
   const content = await getContentById(params.id)
@@ -11,26 +18,20 @@ export default async function ContentPage({ params }) {
     notFound()
   }
 
+  const renderMarkdown = (text) => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")
+      .replace(/`(.*?)`/g, '<code class="bg-purple-900/30 px-1 rounded">$1</code>')
+      .replace(/\[([^\]]+)\]$$([^)]+)$$/g, '<a href="$2" class="text-purple-400 hover:text-purple-300">$1</a>')
+      .replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold text-purple-100 mt-4 mb-2">$1</h2>')
+      .replace(/^- (.*$)/gm, '<li class="ml-4">• $1</li>')
+      .replace(/\n/g, "<br>")
+  }
+
   return (
     <div className="min-h-screen gradient-bg">
-      {/* Navigation */}
-      <nav className="border-b border-purple-500/20 backdrop-blur-sm bg-black/50 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/">
-            <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-              AuraVerse
-            </div>
-          </Link>
-          <div className="flex items-center gap-2 md:gap-4">
-            <Link href="/browse" className="btn btn-ghost text-sm md:text-base">
-              Browse
-            </Link>
-            <Link href="/upload" className="btn btn-primary text-sm md:text-base">
-              Upload
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -72,26 +73,18 @@ export default async function ContentPage({ params }) {
                   </svg>
                   <span>{new Date(content.createdAt).toLocaleDateString()}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  <span>{content.downloads || 0} downloads</span>
-                </div>
+                <DownloadTracker contentId={content._id} downloads={content.downloads || 0} />
               </div>
 
-              <p className="text-gray-300 text-lg leading-relaxed mb-8">{content.description}</p>
+              <div
+                className="text-gray-300 text-lg leading-relaxed mb-8 prose prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(content.description) }}
+              />
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <a
-                  href={content.downloadLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <LinkVertiseButton
+                  originalUrl={content.downloadLink}
+                  contentId={content._id}
                   className="btn btn-primary text-lg px-6 py-3"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,14 +96,16 @@ export default async function ContentPage({ params }) {
                     />
                   </svg>
                   Download Now
-                </a>
-
+                </LinkVertiseButton>
 
                 <Link
                   href={content.downloadLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-secondary text-lg px-6 py-3"
+                  onClick={() => {
+                    fetch(`/api/content/${content._id}/download`, { method: "POST" })
+                  }}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -123,6 +118,8 @@ export default async function ContentPage({ params }) {
                   Direct Link
                 </Link>
               </div>
+
+              <LikeDislike contentId={content._id} type="content" />
             </div>
 
             {/* Google Ad */}
@@ -133,6 +130,11 @@ export default async function ContentPage({ params }) {
               responsive="true"
               className="ad-container"
             />
+
+            {/* Comments Section */}
+            <div className="content-card purple-glow">
+              <Comments contentId={content._id} type="content" />
+            </div>
 
             <div className="mt-8 text-center">
               <Link href="/browse" className="btn btn-ghost">
@@ -158,6 +160,8 @@ export default async function ContentPage({ params }) {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

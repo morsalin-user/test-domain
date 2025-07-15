@@ -1,31 +1,17 @@
 import Link from "next/link"
-import { getLatestContent } from "@/lib/content"
+import { getLatestContent, getRandomContent } from "@/lib/content"
 import { GoogleAd } from "@/components/google-ad"
+import { ContentSlideshow } from "@/components/content-slideshow"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 
 export default async function HomePage() {
   const latestContent = await getLatestContent()
+  const slideshowContent = await getRandomContent(9)
 
   return (
     <div className="min-h-screen gradient-bg">
-      {/* Navigation */}
-      <nav className="border-b border-purple-500/20 backdrop-blur-sm bg-black/50 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-            AuraVerse
-          </div>
-          <div className="flex items-center gap-2 md:gap-4">
-            {/* <Link href="/browse" className="btn btn-ghost text-sm md:text-base">
-              Browse
-            </Link>
-            <Link href="/upload" className="btn btn-primary text-sm md:text-base">
-              Upload
-            </Link> */}
-            <Link href="/admin" className="btn btn-primary text-sm md:text-base">
-              Admin
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-12 md:py-20 text-center">
@@ -63,6 +49,14 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Content Slideshow */}
+      {slideshowContent.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-purple-100">Featured Content</h2>
+          <ContentSlideshow content={slideshowContent} />
+        </section>
+      )}
 
       {/* Google Ad Banner */}
       <GoogleAd
@@ -174,17 +168,7 @@ export default async function HomePage() {
         className="ad-container"
       />
 
-      {/* Footer */}
-      <footer className="border-t border-purple-500/20 bg-black/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent mb-4">
-              AuraVerse
-            </div>
-            <p className="text-gray-400">Empowering creators, one download at a time.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

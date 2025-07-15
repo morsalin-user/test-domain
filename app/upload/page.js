@@ -1,10 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth-provider"
 import { showToast } from "@/components/toast"
+import { GoogleLogin } from "@/components/google-login"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { MarkdownEditor } from "@/components/markdown-editor"
 
 export default function UploadPage() {
   const [formData, setFormData] = useState({
@@ -70,26 +73,6 @@ export default function UploadPage() {
     window.location.href = "/api/auth/discord"
   }
 
-  const handleEmailLogin = async (email) => {
-    try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      })
-
-      if (response.ok) {
-        showToast("Logged in successfully", "success")
-        setShowLoginModal(false)
-        window.location.reload()
-      } else {
-        showToast("Invalid admin email", "error")
-      }
-    } catch (error) {
-      showToast("Login failed", "error")
-    }
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen gradient-bg flex items-center justify-center">
@@ -100,22 +83,7 @@ export default function UploadPage() {
 
   return (
     <div className="min-h-screen gradient-bg">
-      {/* Navigation */}
-      <nav className="border-b border-purple-500/20 backdrop-blur-sm bg-black/50 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/">
-            <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-              AuraVerse
-            </div>
-          </Link>
-          <div className="flex items-center gap-2 md:gap-4">
-            <Link href="/browse" className="btn btn-ghost text-sm md:text-base">
-              Browse
-            </Link>
-            {user && <span className="text-purple-300 text-sm">Welcome, {user.username}</span>}
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="text-center mb-8">
@@ -194,15 +162,12 @@ export default function UploadPage() {
 
             <div>
               <label htmlFor="description" className="block text-purple-200 mb-2">
-                Description
+                Description (Markdown supported)
               </label>
-              <textarea
-                id="description"
-                placeholder="Describe your content, what it does, how to install it, etc."
+              <MarkdownEditor
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="textarea"
-                required
+                onChange={(value) => setFormData({ ...formData, description: value })}
+                placeholder="Describe your content, what it does, how to install it, etc. You can use **bold**, *italic*, `code`, [links](URL), and more!"
               />
             </div>
 
@@ -269,29 +234,7 @@ export default function UploadPage() {
                 Login with Discord
               </button>
 
-              <div className="text-center text-gray-400">or</div>
-
-              <div>
-                <input
-                  type="email"
-                  placeholder="Admin email (for testing)"
-                  className="input mb-2"
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleEmailLogin(e.target.value)
-                    }
-                  }}
-                />
-                <button
-                  onClick={(e) => {
-                    const email = e.target.previousElementSibling.value
-                    handleEmailLogin(email)
-                  }}
-                  className="btn btn-secondary w-full"
-                >
-                  Login with Email
-                </button>
-              </div>
+              <GoogleLogin onSuccess={() => setShowLoginModal(false)} />
             </div>
 
             <button onClick={() => setShowLoginModal(false)} className="btn btn-ghost w-full mt-4">
@@ -300,6 +243,8 @@ export default function UploadPage() {
           </div>
         </div>
       )}
+
+      <Footer />
     </div>
   )
 }

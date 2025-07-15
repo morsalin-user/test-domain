@@ -1,29 +1,16 @@
-export const dynamic = 'force-dynamic';
-
-import Link from "next/link"
 import { getApprovedContent } from "@/lib/content"
 import { GoogleAd } from "@/components/google-ad"
+import { DownloadTracker } from "@/components/download-tracker"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import Link from "next/link"
 
 export default async function BrowsePage() {
   const content = await getApprovedContent()
 
   return (
     <div className="min-h-screen gradient-bg">
-      {/* Navigation */}
-      <nav className="border-b border-purple-500/20 backdrop-blur-sm bg-black/50 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/">
-            <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-              AuraVerse
-            </div>
-          </Link>
-          <div className="flex items-center gap-2 md:gap-4">
-            <Link href="/upload" className="btn btn-primary text-sm md:text-base">
-              Upload
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -107,17 +94,7 @@ export default async function BrowsePage() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                      <span className="text-sm text-gray-400">{item.downloads || 0} downloads</span>
-                    </div>
+                    <DownloadTracker contentId={item._id} downloads={item.downloads || 0} />
                     <Link href={`/content/${item._id}`} className="btn btn-primary text-sm">
                       View Details
                     </Link>
@@ -155,6 +132,8 @@ export default async function BrowsePage() {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

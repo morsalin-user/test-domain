@@ -1,3 +1,5 @@
+// api/auth/discord/callback/route.js
+
 import { NextResponse } from "next/server"
 import jwt from "jsonwebtoken"
 

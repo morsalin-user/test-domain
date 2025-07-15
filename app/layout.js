@@ -23,6 +23,8 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+        {/* Google OAuth */}
+        <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
       </head>
       <body className={`${inter.className} bg-black text-white min-h-screen`}>
         <AuthProvider>

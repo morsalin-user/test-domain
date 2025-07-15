@@ -17,7 +17,8 @@
 }
 
 .gradient-bg {
-  background: linear-gradient(135deg, #000000 0%, #1a0033 50%, #000000 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  min-height: 100vh;
 }
 
 .purple-glow {
@@ -276,4 +277,39 @@
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* Slideshow Styles */
+.slideshow-container {
+  position: relative;
+}
+
+.slideshow-track {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+}
+
+.slideshow-slide {
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.content-card {
+  background: rgba(31, 41, 55, 1);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  flex: 1;
+}
+
+.hover\:purple-glow:hover {
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
