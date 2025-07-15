@@ -144,9 +144,11 @@ export default function RequestsPage() {
                   <option value="">Select a category</option>
                   <option value="plugins">Plugins</option>
                   <option value="servers">Server Setups</option>
-                  <option value="mods">Mods</option>
-                  <option value="maps">Maps</option>
-                  <option value="textures">Texture Packs</option>
+                  <option value="mods">Builds</option>
+                  <option value="maps">Configs</option>
+                  <option value="textures">Models</option>
+                  <option value="other">Server jars</option>
+                  <option value="other">Skripts</option>
                   <option value="other">Other</option>
                 </select>
               </div>
@@ -263,7 +265,7 @@ export default function RequestsPage() {
                 />
 
                 <div className="flex items-center justify-between mb-4">
-                  <LikeDislike contentId={request._id} type="request" />
+                  <LikeDislike contentId={request._id} type="requests" />
                   <button className="btn btn-secondary">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -277,7 +279,7 @@ export default function RequestsPage() {
                   </button>
                 </div>
 
-                <Comments contentId={request._id} type="request" />
+                <Comments contentId={request._id} type="requests" />
               </div>
             ))}
           </div>

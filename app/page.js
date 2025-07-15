@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from "next/link"
 import { getLatestContent, getRandomContent } from "@/lib/content"
 import { GoogleAd } from "@/components/google-ad"

@@ -153,9 +153,11 @@ export default function UploadPage() {
                 <option value="">Select a category</option>
                 <option value="plugins">Plugins</option>
                 <option value="servers">Server Setups</option>
-                <option value="mods">Mods</option>
-                <option value="maps">Maps</option>
-                <option value="textures">Texture Packs</option>
+                <option value="mods">Builds</option>
+                <option value="maps">Configs</option>
+                <option value="textures">Models</option>
+                <option value="other">Server jars</option>
+                <option value="other">Skripts</option>
                 <option value="other">Other</option>
               </select>
             </div>
