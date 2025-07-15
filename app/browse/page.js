@@ -1,3 +1,6 @@
+
+export const dynamic = 'force-dynamic';
+
 import { getApprovedContent } from "@/lib/content"
 import { GoogleAd } from "@/components/google-ad"
 import { DownloadTracker } from "@/components/download-tracker"
