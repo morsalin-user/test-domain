@@ -1,3 +1,5 @@
+// models/Content.js
+
 import mongoose from "mongoose"
 
 const ContentSchema = new mongoose.Schema({
@@ -31,6 +33,35 @@ const ContentSchema = new mongoose.Schema({
       message: "Download link must be from MediaFire, MEGA, or GoFile.io",
     },
   },
+  linkvertiseLink: {
+    type: String,
+    required: false,
+    default: "",
+    validate: {
+      validator: (v) => {
+        if (!v) return true // Empty string is valid
+        try {
+          new URL(v)
+          return true
+        } catch {
+          return false
+        }
+      },
+      message: "Linkvertise link must be a valid URL",
+    },
+  },
+  image: {
+    type: String,
+    required: false,
+    default: "",
+    validate: {
+      validator: (v) => {
+        if (!v) return true // Empty string is valid
+        return v.startsWith('data:image/')
+      },
+      message: "Image must be a valid base64 data URL",
+    },
+  },
   author: {
     type: String,
     required: true,
@@ -49,6 +80,16 @@ const ContentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+})
+
+// Update the updatedAt field on save
+ContentSchema.pre('save', function(next) {
+  this.updatedAt = new Date()
+  next()
 })
 
 export default mongoose.models.Content || mongoose.model("Content", ContentSchema)
