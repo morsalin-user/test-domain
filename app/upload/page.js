@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth-provider"
@@ -16,7 +15,9 @@ export default function UploadPage() {
     category: "",
     downloadLink: "",
     author: "",
+    image: "", // Base64 image data
   })
+  const [imagePreview, setImagePreview] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const router = useRouter()
@@ -34,9 +35,7 @@ export default function UploadPage() {
       setShowLoginModal(true)
       return
     }
-
     setIsSubmitting(true)
-
     try {
       const response = await fetch("/api/content", {
         method: "POST",
@@ -45,7 +44,6 @@ export default function UploadPage() {
         },
         body: JSON.stringify(formData),
       })
-
       if (response.ok) {
         showToast("Content submitted for review!", "success")
         router.push("/browse")
@@ -69,6 +67,65 @@ export default function UploadPage() {
     }
   }
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      showToast("Please select a valid image file", "error")
+      return
+    }
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Image size must be less than 5MB", "error")
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const img = new Image()
+      img.onload = () => {
+        // Create canvas to resize image if needed
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+
+        // Set max dimensions while maintaining aspect ratio
+        const maxWidth = 800
+        const maxHeight = 800
+
+        let { width, height } = img
+
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width
+          width = maxWidth
+        }
+
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height
+          height = maxHeight
+        }
+
+        canvas.width = width
+        canvas.height = height
+
+        ctx.drawImage(img, 0, 0, width, height)
+
+        const base64 = canvas.toDataURL('image/jpeg', 0.8)
+        setFormData({ ...formData, image: base64 })
+        setImagePreview(base64)
+      }
+      img.src = event.target.result
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removeImage = () => {
+    setFormData({ ...formData, image: "" })
+    setImagePreview(null)
+  }
+
   const handleDiscordLogin = () => {
     window.location.href = "/api/auth/discord"
   }
@@ -84,7 +141,6 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen gradient-bg">
       <Header />
-
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-100">Share Your Content</h1>
@@ -93,7 +149,6 @@ export default function UploadPage() {
             live.
           </p>
         </div>
-
         <div className="content-card purple-glow">
           <div className="flex items-center gap-2 mb-4">
             <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +162,6 @@ export default function UploadPage() {
             <h2 className="text-xl font-bold text-purple-100">Upload Content</h2>
           </div>
           <p className="text-gray-300 mb-6">Fill out the form below to submit your content for review.</p>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="title" className="block text-purple-200 mb-2">
@@ -123,7 +177,6 @@ export default function UploadPage() {
                 required
               />
             </div>
-
             <div>
               <label htmlFor="author" className="block text-purple-200 mb-2">
                 Author Name
@@ -138,7 +191,6 @@ export default function UploadPage() {
                 required
               />
             </div>
-
             <div>
               <label htmlFor="category" className="block text-purple-200 mb-2">
                 Category
@@ -161,7 +213,50 @@ export default function UploadPage() {
                 <option value="other">Other</option>
               </select>
             </div>
+            <div>
+              <label htmlFor="image" className="block text-purple-200 mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Preview Image
+              </label>
 
+              {imagePreview ? (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-108 object-cover rounded-lg border border-purple-400/30"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-purple-400/30 rounded-lg p-6 text-center">
+                  <svg className="w-12 h-12 text-purple-400/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-purple-200 mb-2">Upload a preview image</p>
+                  <p className="text-gray-400 text-sm mb-4">Max 5MB</p>
+                  <label className="btn btn-secondary cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    Choose Image
+                  </label>
+                </div>
+              )}
+            </div>
             <div>
               <label htmlFor="description" className="block text-purple-200 mb-2">
                 Description (Markdown supported)
@@ -172,7 +267,6 @@ export default function UploadPage() {
                 placeholder="Describe your content, what it does, how to install it, etc. You can use **bold**, *italic*, `code`, [links](URL), and more!"
               />
             </div>
-
             <div>
               <label htmlFor="downloadLink" className="block text-purple-200 mb-2 flex items-center gap-2">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +300,6 @@ export default function UploadPage() {
                 Only links from MediaFire, MEGA, and GoFile.io are allowed.
               </div>
             </div>
-
             <button
               type="submit"
               className="btn btn-primary w-full"
@@ -217,14 +310,12 @@ export default function UploadPage() {
           </form>
         </div>
       </div>
-
       {/* Login Modal */}
       {showLoginModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="content-card max-w-md w-full">
             <h3 className="text-xl font-bold text-purple-100 mb-4">Login Required</h3>
             <p className="text-gray-300 mb-6">You need to login to upload content.</p>
-
             <div className="space-y-4">
               <button
                 onClick={handleDiscordLogin}
@@ -235,17 +326,14 @@ export default function UploadPage() {
                 </svg>
                 Login with Discord
               </button>
-
               <GoogleLogin onSuccess={() => setShowLoginModal(false)} />
             </div>
-
             <button onClick={() => setShowLoginModal(false)} className="btn btn-ghost w-full mt-4">
               Cancel
             </button>
           </div>
         </div>
       )}
-
       <Footer />
     </div>
   )
