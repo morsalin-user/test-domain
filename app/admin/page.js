@@ -12,6 +12,8 @@ export default function AdminPage() {
   const [pendingContent, setPendingContent] = useState([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [linkvertiseLinks, setLinkvertiseLinks] = useState({})
+  const [savingLinks, setSavingLinks] = useState({})
   const { user } = useAuth()
 
   useEffect(() => {
@@ -45,6 +47,13 @@ export default function AdminPage() {
       if (response.ok) {
         const data = await response.json()
         setPendingContent(data)
+        
+        // Initialize linkvertise links state
+        const initialLinks = {}
+        data.forEach(content => {
+          initialLinks[content._id] = content.linkvertiseLink || ""
+        })
+        setLinkvertiseLinks(initialLinks)
       }
     } catch (error) {
       console.error("Failed to load pending content:", error)
@@ -72,6 +81,50 @@ export default function AdminPage() {
       }
     } catch (error) {
       showToast("Failed to reject content", "error")
+    }
+  }
+
+  const handleLinkvertiseChange = (contentId, value) => {
+    setLinkvertiseLinks(prev => ({
+      ...prev,
+      [contentId]: value
+    }))
+  }
+
+  const saveLinkvertiseLink = async (contentId) => {
+    setSavingLinks(prev => ({ ...prev, [contentId]: true }))
+    
+    try {
+      const response = await fetch(`/api/admin/linkvertise/${contentId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          linkvertiseLink: linkvertiseLinks[contentId]
+        })
+      })
+
+      if (response.ok) {
+        showToast("Linkvertise link saved", "success")
+        loadPendingContent()
+      } else {
+        throw new Error("Failed to save linkvertise link")
+      }
+    } catch (error) {
+      showToast("Failed to save linkvertise link", "error")
+    } finally {
+      setSavingLinks(prev => ({ ...prev, [contentId]: false }))
+    }
+  }
+
+  const isValidUrl = (url) => {
+    if (!url) return true // Empty is valid
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
     }
   }
 
@@ -144,66 +197,151 @@ export default function AdminPage() {
                   <span className="badge badge-primary">{content.category}</span>
                 </div>
 
-                <h3 className="text-xl font-bold text-purple-100 mb-2">{content.title}</h3>
-                <p className="text-gray-300 mb-2">
-                  by {content.author} • {new Date(content.createdAt).toLocaleDateString()}
-                </p>
-                <p className="text-gray-300 mb-4">{content.description}</p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Left Column - Content Info */}
+                  <div>
+                    <h3 className="text-xl font-bold text-purple-100 mb-2">{content.title}</h3>
+                    <p className="text-gray-300 mb-2">
+                      by {content.author} • {new Date(content.createdAt).toLocaleDateString()}
+                    </p>
+                    <p className="text-gray-300 mb-4">{content.description}</p>
 
-                <div className="mb-4">
-                  <span className="text-purple-200 font-medium">Download Link: </span>
-                  <Link
-                    href={content.downloadLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-400 hover:text-purple-300 break-all"
-                  >
-                    {content.downloadLink}
-                  </Link>
-                </div>
+                    {/* Preview Image */}
+                    {content.image && (
+                      <div className="mb-4">
+                        <p className="text-purple-200 font-medium mb-2">Preview Image:</p>
+                        <img
+                          src={content.image}
+                          alt="Content preview"
+                          className="w-full h-72 object-cover rounded-lg border border-purple-400/30"
+                        />
+                      </div>
+                    )}
 
-                <div className="flex flex-wrap gap-2">
-                  <button onClick={() => handleApprove(content._id)} className="btn btn-success">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Approve
-                  </button>
-                  <button onClick={() => handleReject(content._id)} className="btn btn-danger">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Reject
-                  </button>
-                  <Link
-                    href={content.downloadLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                    Preview
-                  </Link>
+                    {/* Download Links */}
+                    <div className="space-y-3">
+                      <div>
+                        <span className="text-purple-200 font-medium">Original Download Link: </span>
+                        <Link
+                          href={content.downloadLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-400 hover:text-purple-300 break-all"
+                        >
+                          {content.downloadLink}
+                        </Link>
+                      </div>
+                      
+                      {content.linkvertiseLink && (
+                        <div>
+                          <span className="text-purple-200 font-medium">Linkvertise Link: </span>
+                          <Link
+                            href={content.linkvertiseLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-green-400 hover:text-green-300 break-all"
+                          >
+                            {content.linkvertiseLink}
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right Column - Admin Actions */}
+                  <div className="space-y-4">
+                    {/* Linkvertise Link Management */}
+                    <div className="bg-purple-800/20 rounded-lg p-4 border border-purple-600/30">
+                      <h4 className="text-lg font-semibold text-purple-100 mb-3 flex items-center gap-2">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                          />
+                        </svg>
+                        Linkvertise Link
+                      </h4>
+                      <div className="space-y-3">
+                        <input
+                          type="url"
+                          placeholder="https://linkvertise.com/..."
+                          value={linkvertiseLinks[content._id] || ""}
+                          onChange={(e) => handleLinkvertiseChange(content._id, e.target.value)}
+                          className="input w-full"
+                        />
+                        <button
+                          onClick={() => saveLinkvertiseLink(content._id)}
+                          disabled={savingLinks[content._id] || !isValidUrl(linkvertiseLinks[content._id])}
+                          className="btn btn-secondary w-full flex items-center justify-center gap-2"
+                        >
+                          {savingLinks[content._id] ? (
+                            <>
+                              <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                              </svg>
+                              Save Link
+                            </>
+                          )}
+                        </button>
+                        <p className="text-gray-400 text-sm">
+                          Optional: Add a Linkvertise monetization link for this content
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="space-y-3">
+                      <button onClick={() => handleApprove(content._id)} className="btn btn-success w-full">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Approve Content
+                      </button>
+                      <button onClick={() => handleReject(content._id)} className="btn btn-danger w-full">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Reject Content
+                      </button>
+                      <Link
+                        href={content.downloadLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-secondary w-full flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                        Preview Download
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
-
       <Footer />
     </div>
   )
