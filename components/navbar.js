@@ -47,10 +47,10 @@ export default function Navbar() {
             )}
           </SignedIn>
           <SignedOut>
-            <Link href="/login" className="hover:text-amber-400">
+            <Link href="/sign-in" className="hover:text-amber-400">
               Login
             </Link>
-            <Link href="/register" className="hover:text-amber-400">
+            <Link href="/sign-up" className="hover:text-amber-400">
               Register
             </Link>
           </SignedOut>
@@ -73,10 +73,10 @@ export default function Navbar() {
             )}
           </SignedIn>
           <SignedOut>
-            <Link href="/login" className="block" onClick={() => setOpen(false)}>
+            <Link href="/sign-in" className="block" onClick={() => setOpen(false)}>
               Login
             </Link>
-            <Link href="/register" className="block" onClick={() => setOpen(false)}>
+            <Link href="/sign-up" className="block" onClick={() => setOpen(false)}>
               Register
             </Link>
           </SignedOut>
