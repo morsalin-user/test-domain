@@ -1,6 +1,9 @@
+"use server"
+
 import { getDb } from "../lib/mongodb"
 import Gallery from "../components/gallery"
 import Navbar from "../components/navbar"
+
 import Footer from "../components/footer"
 
 export default async function HomePage() {
