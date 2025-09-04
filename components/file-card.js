@@ -120,11 +120,11 @@ export default function FileCard({ item }) {
         </div>
 
         {/* Description at bottom - truncated to 100 chars */}
-        {truncatedDescription && (
+        {/* {truncatedDescription && (
           <div className="mt-auto pt-1">
             <p className="text-sm text-neutral-300 leading-5">{truncatedDescription}</p>
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Login Modal */}
