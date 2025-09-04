@@ -1,42 +1,41 @@
-// app/api/video/stream/[id]/route.js - New API for streaming videos (no download)
+// app/api/user/download-stats/route.js
 import { NextResponse } from "next/server"
-import { ObjectId } from "mongodb"
+import { auth } from "@clerk/nextjs/server"
 import { getDb } from "../../../../lib/mongodb"
 
 export const runtime = "nodejs"
 
-export async function GET(req, { params }) {
-  try {
-    const db = await getDb()
-    const doc = await db.collection("files").findOne({ _id: new ObjectId(params.id) })
-    if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
-
-    const cdn = doc.secureUrl || doc.mp4Url
-    if (!cdn) return NextResponse.json({ error: "No file URL" }, { status: 400 })
-
-    // Fetch video from Cloudinary
-    const response = await fetch(cdn)
-    if (!response.ok) {
-      throw new Error('Failed to fetch video')
-    }
-
-    // Stream the video with headers that prevent downloading
-    const videoStream = response.body
-    
-    return new NextResponse(videoStream, {
-      status: 200,
-      headers: {
-        'Content-Type': 'video/mp4',
-        'Content-Disposition': 'inline', // Force inline viewing, not download
-        'Cache-Control': 'private, max-age=3600',
-        'Accept-Ranges': 'bytes',
-        // Security headers to prevent downloads
-        'X-Content-Type-Options': 'nosniff',
-        'Referrer-Policy': 'same-origin',
-      },
-    })
-  } catch (error) {
-    console.error('Streaming error:', error)
-    return NextResponse.json({ error: "Failed to stream video" }, { status: 500 })
+export async function GET() {
+  const { userId } = await auth()
+  
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  const db = await getDb()
+  
+  // Get today's date range
+  const today = new Date()
+  today.setHours(0, 0, 0, 0) // Start of today
+  
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1) // Start of tomorrow
+  
+  // Count today's downloads
+  const todayDownloads = await db.collection("downloads").countDocuments({
+    userId,
+    at: {
+      $gte: today,
+      $lt: tomorrow
+    }
+  })
+  
+  const remainingDownloads = Math.max(0, 5 - todayDownloads)
+  
+  return NextResponse.json({
+    downloaded: todayDownloads,
+    remaining: remainingDownloads,
+    limit: 5,
+    canDownload: remainingDownloads > 0
+  })
 }
