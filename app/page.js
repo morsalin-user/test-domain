@@ -3,7 +3,7 @@
 import { getDb } from "../lib/mongodb"
 import Gallery from "../components/gallery"
 import Navbar from "../components/navbar"
-
+import CountdownTimer from "../components/countdown-timer"
 import Footer from "../components/footer"
 
 export default async function HomePage() {
@@ -20,6 +20,7 @@ export default async function HomePage() {
   return (
     <>
       <Navbar />
+      <CountdownTimer />
       <main className="max-w-7xl mx-auto px-4 py-8 bg-neutral-900">
         <Gallery items={mapped} />
       </main>

@@ -1,5 +1,7 @@
+// api/admin/save/route.js
+
 import { NextResponse } from "next/server"
-import { getAuth, clerkClient } from "@clerk/nextjs/server"
+import { currentUser } from "@clerk/nextjs/server"
 import { v2 as cloudinary } from "cloudinary"
 import { getDb } from "../../../../lib/mongodb"
 
@@ -13,15 +15,15 @@ export const runtime = "nodejs"
 
 export async function POST(req) {
   try {
-    const { userId, sessionId } = getAuth(req)
-    if (!userId || !sessionId) {
-      console.log("[v0] admin/save: no session", { userId, sessionId })
+    const user = await currentUser()
+    if (!user) {
+      console.log("[v0] admin/save: no user")
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "email@example.com").toLowerCase()
-    const user = await clerkClient.users.getUser(userId)
-    const email = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || ""
+    const email = user.primaryEmailAddress?.emailAddress || user.emailAddresses?.[0]?.emailAddress || ""
+    
     if ((email || "").toLowerCase() !== adminEmail) {
       console.log("[v0] admin/save: forbidden for email", email)
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -34,6 +36,7 @@ export async function POST(req) {
     const category = String(formData.get("category") || "other")
     const fileType = String(formData.get("fileType") || "video")
     const file = formData.get("file")
+    
     if (!file || typeof file === "string") {
       return NextResponse.json({ error: "Missing file" }, { status: 400 })
     }
@@ -71,7 +74,7 @@ export async function POST(req) {
       duration: uploadResult.duration,
       width: uploadResult.width,
       height: uploadResult.height,
-      uploaderId: userId,
+      uploaderId: user.id,
       createdAt: new Date(),
     }
     await db.collection("files").insertOne(doc)
@@ -80,6 +83,6 @@ export async function POST(req) {
     return NextResponse.redirect(location)
   } catch (e) {
     console.error("[v0] admin/save error:", e)
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 })
+    return NextResponse.json({ error: "Upload failed", details: e.message }, { status: 500 })
   }
 }

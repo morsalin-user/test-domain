@@ -74,31 +74,34 @@ export default function FileCard({ item }) {
     }
   }, [isSignedIn, item?._id])
 
+  // Truncate description to 100 characters
+  const truncatedDescription = description.length > 70 
+    ? description.substring(0, 70) + '...' 
+    : description
+
   return (
-    <div className="bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800">
-      <div className="bg-neutral-900">
-        <video className="w-full h-full" controls playsInline preload="metadata" controlsList="nodownload">
+    <div className="bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 h-full flex flex-col">
+      {/* Video section - fixed aspect ratio */}
+      <div className="bg-neutral-900 aspect-video max-h-[200px] min-h-[200px]">
+        <video className="w-full h-full object-cover" controls playsInline preload="metadata" controlsList="nodownload">
           <source src={src} type="video/mp4" />
           {"Your browser does not support the video tag."}
         </video>
       </div>
 
-      <div className="p-3 flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-neutral-100 text-pretty">{title}</h3>
-          {category ? (
-            <span className="ml-2 shrink-0 rounded-md bg-neutral-800 text-neutral-300 px-2 py-0.5 text-xs">
-              {category}
-            </span>
-          ) : null}
+      {/* Content section - flex grow to fill remaining space */}
+      <div className="p-3 flex flex-col gap-2 flex-grow">
+        {/* Title */}
+        <div>
+          <h3 className="text-sm font-semibold text-neutral-100 text-pretty line-clamp-2">{title}</h3>
         </div>
-        {description ? <p className="text-sm text-neutral-300 leading-6 line-clamp-3">{description}</p> : null}
 
-        <div className="pt-1">
+        {/* Download button and category in same line */}
+        <div className="flex items-center justify-between gap-2">
           <button
             type="button"
             onClick={handleDownload}
-            className="inline-flex items-center gap-2 rounded-md bg-amber-600 hover:bg-amber-500 text-neutral-900 font-medium px-3 py-2 transition-colors"
+            className="inline-flex items-center gap-2 rounded-md bg-amber-600 hover:bg-amber-500 text-neutral-900 font-medium px-3 py-2 transition-colors flex-shrink-0"
             aria-label="Download video"
             title="Download video"
           >
@@ -108,7 +111,20 @@ export default function FileCard({ item }) {
             </svg>
             <span className="text-sm">Download</span>
           </button>
+
+          {category && (
+            <span className="shrink-0 rounded-md bg-neutral-800 text-neutral-300 px-2 py-0.5 text-xs">
+              {category}
+            </span>
+          )}
         </div>
+
+        {/* Description at bottom - truncated to 100 chars */}
+        {truncatedDescription && (
+          <div className="mt-auto pt-1">
+            <p className="text-sm text-neutral-300 leading-5">{truncatedDescription}</p>
+          </div>
+        )}
       </div>
 
       {/* Login Modal */}

@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import Link from "next/link"
-import { SignedIn, SignedOut, useUser } from "@clerk/nextjs"
+import { SignedIn, SignedOut, useUser, UserButton } from "@clerk/nextjs"
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -45,6 +45,8 @@ export default function Navbar() {
                 Admin
               </Link>
             )}
+            {/* Clerk's UserButton component includes sign out functionality */}
+            <UserButton afterSignOutUrl="/" />
           </SignedIn>
           <SignedOut>
             <Link href="/sign-in" className="hover:text-amber-400">
@@ -71,6 +73,10 @@ export default function Navbar() {
                 Admin
               </Link>
             )}
+            {/* UserButton for mobile menu */}
+            <div className="pt-2">
+              <UserButton afterSignOutUrl="/" />
+            </div>
           </SignedIn>
           <SignedOut>
             <Link href="/sign-in" className="block" onClick={() => setOpen(false)}>
