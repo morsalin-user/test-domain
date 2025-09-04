@@ -3,6 +3,8 @@
 import { NextResponse } from "next/server"
 const CLERK_BASE = "https://api.clerk.com/v1"
 
+export const runtime = "nodejs"
+
 export async function POST(req) {
   try {
     const { email, minutes = 15 } = await req.json()

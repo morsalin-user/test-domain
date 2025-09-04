@@ -2,6 +2,8 @@ import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 import { getDb } from "@/lib/mongodb"
 
+export const runtime = "nodejs"
+
 export async function POST(req) {
   const { userId } = auth()
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

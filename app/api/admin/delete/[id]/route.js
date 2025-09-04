@@ -4,6 +4,8 @@ import { ObjectId } from "mongodb"
 import { getDb } from "@/lib/mongodb"
 import { cloudinary } from "@/lib/cloudinary"
 
+export const runtime = "nodejs"
+
 export async function DELETE(_req, { params }) {
   const { userId } = auth()
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

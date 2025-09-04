@@ -9,6 +9,8 @@ cloudinary.v2.config({
   secure: true,
 })
 
+export const runtime = "nodejs"
+
 export async function POST() {
   const { userId } = auth()
   if (!userId) {

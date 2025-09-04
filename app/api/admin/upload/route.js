@@ -5,6 +5,8 @@ import { isAdminEmail } from "@/lib/auth"
 import { cloudinary } from "@/lib/cloudinary"
 import { getDb } from "@/lib/mongodb"
 
+export const runtime = "nodejs"
+
 export async function POST(req) {
   const user = await currentUser()
   const email = user?.primaryEmailAddress?.emailAddress || ""

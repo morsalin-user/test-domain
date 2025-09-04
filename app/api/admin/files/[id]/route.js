@@ -5,6 +5,8 @@ import { isAdminEmail } from "@/lib/auth"
 import { getDb } from "@/lib/mongodb"
 import { cloudinary } from "@/lib/cloudinary"
 
+export const runtime = "nodejs"
+
 export async function DELETE(_req, { params }) {
   const user = await currentUser()
   const email = user?.primaryEmailAddress?.emailAddress || ""

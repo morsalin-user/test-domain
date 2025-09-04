@@ -6,6 +6,8 @@ import bcrypt from "bcryptjs"
 import { getDb } from "@/lib/mongodb"
 import { auth } from "@clerk/nextjs/server"
 
+export const runtime = "nodejs"
+
 export async function POST(req) {
   try {
     const { userId } = auth()
