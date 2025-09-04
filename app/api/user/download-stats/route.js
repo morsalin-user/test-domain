@@ -1,7 +1,7 @@
 // app/api/video/stream/[id]/route.js - New API for streaming videos (no download)
 import { NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
-import { getDb } from "../../../../../lib/mongodb"
+import { getDb } from "../../../../lib/mongodb"
 
 export const runtime = "nodejs"
 
