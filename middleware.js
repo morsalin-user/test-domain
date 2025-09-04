@@ -1,11 +1,11 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 
 // Protect only the routes that must require login
-const isProtected = createRouteMatcher(["/api/admin(.*)", "/api/download(.*)"])
+const isProtected = createRouteMatcher(["/api/admin(.*)"])
 
 export default clerkMiddleware((auth, req) => {
   if (isProtected(req)) {
-    auth.protect()
+    auth().protect()
   }
 })
 
