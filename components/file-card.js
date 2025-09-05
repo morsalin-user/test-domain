@@ -99,12 +99,12 @@ export default function FileCard({ item }) {
       {/* Content section - flex grow to fill remaining space */}
       <div className="p-3 flex flex-col gap-2 flex-grow">
         {/* Title */}
-        <div>
-          <h3 className="text-sm font-semibold text-neutral-100 text-pretty line-clamp-3">{truncatedDescription}</h3>
+        <div className="flex-1">
+          <h3 className="text-sm font-semibold text-neutral-100 text-pretty line-clamp-2">{truncatedDescription}</h3>
         </div>
 
-        {/* Download button and category in same line */}
-        <div className="flex items-center justify-between gap-2">
+        {/* Download button and category - always at bottom */}
+        <div className="flex items-center justify-between gap-2 mt-auto">
           <button
             type="button"
             onClick={handleDownload}
