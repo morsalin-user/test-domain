@@ -13,7 +13,7 @@ export default function Navbar() {
     <header className="w-full bg-neutral-900 text-neutral-100 border-b border-neutral-800">
       <nav className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center">
-          <img src="/logo.png" alt="Logo" className="h-8" />
+          <img src="/logo.png" alt="Logo" className="h-12" />
         </Link>
         <button
           className="md:hidden inline-flex items-center justify-center p-2 rounded bg-neutral-800 hover:bg-neutral-700"
