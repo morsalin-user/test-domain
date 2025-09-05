@@ -1,3 +1,5 @@
+// api/admin/delete/[id]/route.js
+
 import { NextResponse } from "next/server"
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { ObjectId } from "mongodb"

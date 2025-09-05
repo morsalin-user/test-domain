@@ -1,3 +1,5 @@
+// admin/panel.js
+
 "use client"
 
 import useSWR from "swr"
