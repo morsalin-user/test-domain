@@ -2,7 +2,7 @@
 "use client"
 import { useMemo, useState } from "react"
 import FileCard from "./file-card"
-// import DownloadCounter from "./download-counter"
+import DownloadCounter from "./download-counter"
 
 export default function Gallery({ items = [], initialCount = 8, selectedCategory = "all" }) {
   const [expanded, setExpanded] = useState(false)
@@ -30,7 +30,7 @@ export default function Gallery({ items = [], initialCount = 8, selectedCategory
   return (
     <section className="w-full">
       {/* Download Counter */}
-      {/* <DownloadCounter /> */}
+      <DownloadCounter />
 
       {/* Gallery Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6">
