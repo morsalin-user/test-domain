@@ -6,6 +6,9 @@ import CountdownTimer from "../components/countdown-timer"
 import Footer from "../components/footer"
 import CategoryFilter from "../components/category-filter"
 import Advertisement from "../components/advertisement"
+import Instruction from "../components/instruction"
+import HitCounter from "../components/hit-counter"
+
 
 export default async function HomePage() {
   const db = await getDb()
@@ -28,6 +31,8 @@ export default async function HomePage() {
       <Navbar />
       <CountdownTimer />
       <main className="max-w-7xl mx-auto px-4 py-8 bg-neutral-900">
+        <HitCounter />
+        <Instruction />
         <CategoryFilter categories={categories} />
         <Gallery items={mapped} />
       </main>

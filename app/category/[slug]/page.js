@@ -54,7 +54,7 @@ export default async function CategoryPage({ params }) {
             {slug} Videos
           </h1>
           <p className="text-neutral-400">
-            {mapped.length} video{mapped.length !== 1 ? 's' : ''} found in this category
+            {mapped.length} video{mapped.length !== 1 ? 's' : ''} available in this category
           </p>
         </div>
         

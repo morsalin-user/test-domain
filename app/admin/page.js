@@ -2,7 +2,7 @@
 import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 
-const CATEGORIES = ["character", "animals", "tech", "business", "funny", "sketch", "other"]
+const CATEGORIES = ["Humor", "Supportive", "Criticism", "Sarcasm", "Affirmation", "Accolade", "Emotional", "Inquisitive", "Rude", "Self-Promotion"]
 
 export default async function AdminPage() {
   const user = await currentUser()
