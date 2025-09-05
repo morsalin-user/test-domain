@@ -74,16 +74,23 @@ export default function FileCard({ item }) {
     }
   }, [isSignedIn, item?._id])
 
-  // Truncate description to 100 characters
-  const truncatedDescription = description.length > 70 
-    ? description.substring(0, 70) + '...' 
+  // Truncate description to 115 characters
+  const truncatedDescription = description.length > 115 
+    ? description.substring(0, 115) + '...' 
     : description
 
   return (
     <div className="bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 h-full flex flex-col">
-      {/* Video section - fixed aspect ratio */}
-      <div className="bg-neutral-900 aspect-video max-h-[200px] min-h-[200px]">
-        <video className="w-full h-full object-cover" controls playsInline preload="metadata" controlsList="nodownload">
+      {/* Video section - flexible container with max height */}
+      <div className="bg-neutral-900 relative w-full max-h-[280px] min-h-[200px] flex items-center justify-center overflow-hidden">
+        <video 
+          className="w-full h-full object-contain" 
+          controls 
+          playsInline 
+          preload="metadata" 
+          controlsList="nodownload"
+          style={{ maxHeight: '280px' }}
+        >
           <source src={src} type="video/mp4" />
           {"Your browser does not support the video tag."}
         </video>
@@ -93,7 +100,7 @@ export default function FileCard({ item }) {
       <div className="p-3 flex flex-col gap-2 flex-grow">
         {/* Title */}
         <div>
-          <h3 className="text-sm font-semibold text-neutral-100 text-pretty line-clamp-2">{title}</h3>
+          <h3 className="text-sm font-semibold text-neutral-100 text-pretty line-clamp-3">{truncatedDescription}</h3>
         </div>
 
         {/* Download button and category in same line */}
@@ -118,13 +125,6 @@ export default function FileCard({ item }) {
             </span>
           )}
         </div>
-
-        {/* Description at bottom - truncated to 100 chars */}
-        {/* {truncatedDescription && (
-          <div className="mt-auto pt-1">
-            <p className="text-sm text-neutral-300 leading-5">{truncatedDescription}</p>
-          </div>
-        )} */}
       </div>
 
       {/* Login Modal */}
