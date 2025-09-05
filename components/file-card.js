@@ -89,7 +89,7 @@ export default function FileCard({ item }) {
           playsInline 
           preload="metadata" 
           controlsList="nodownload"
-          style={{ maxHeight: '280px' }}
+          style={{ maxHeight: '280px', minHeight: '280px' }}
         >
           <source src={src} type="video/mp4" />
           {"Your browser does not support the video tag."}
