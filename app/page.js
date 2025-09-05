@@ -9,7 +9,7 @@ import Advertisement from "../components/advertisement"
 
 export default async function HomePage() {
   const db = await getDb()
-  
+
   // Fetch all videos
   const items = await db
     .collection("files")
@@ -30,8 +30,8 @@ export default async function HomePage() {
       <main className="max-w-7xl mx-auto px-4 py-8 bg-neutral-900">
         <CategoryFilter categories={categories} />
         <Gallery items={mapped} />
-        <Advertisement />
       </main>
+      <Advertisement />
       <Footer />
     </>
   )

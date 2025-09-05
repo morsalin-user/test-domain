@@ -129,7 +129,7 @@ function AdCard({ company }) {
 
 export default function Advertisement() {
   return (
-    <section className="w-full mb-8">
+    <section className="w-full mb-8 mt-8">
       <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
