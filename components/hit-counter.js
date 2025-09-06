@@ -34,7 +34,7 @@ export default function HitCounter() {
           {digits.map((digit, idx) => (
             <div
               key={idx}
-              className="text-black bg-amber-500 font-mono font-bold text-2xl w-15 h-14 flex items-center justify-center rounded-md shadow-md"
+              className="bg-gradient-to-r from-amber-600 to-orange-500 text-black font-mono font-bold text-2xl w-15 h-14 flex items-center justify-center rounded-md shadow-md"
             >
               {digit}
             </div>
