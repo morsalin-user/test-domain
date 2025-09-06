@@ -1,71 +1,81 @@
 // api/admin/delete-all/route.js
-
 import { NextResponse } from "next/server"
-import { auth, currentUser } from "@clerk/nextjs/server"
-import { getDb } from "@/lib/mongodb"
-import { cloudinary } from "@/lib/cloudinary"
+import { currentUser } from "@clerk/nextjs/server"
+import { v2 as cloudinary } from "cloudinary"
+import { getDb } from "../../../../lib/mongodb"
 
-export const runtime = "nodejs"
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
-export async function DELETE(req) {
+export async function POST(req) {
   try {
-    const { userId } = auth()
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    
-    const cu = await currentUser()
+    // Authentication check
+    const user = await currentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "email@example.com").toLowerCase()
-    const email = cu?.primaryEmailAddress?.emailAddress || ""
+    const email = user.primaryEmailAddress?.emailAddress || user.emailAddresses?.[0]?.emailAddress || ""
     
-    if (email.toLowerCase() !== adminEmail) {
+    if ((email || "").toLowerCase() !== adminEmail) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
     const db = await getDb()
     
-    // Check both collections and delete from both
-    const videosFiles = await db.collection("videos").find({}).toArray()
-    const filesFiles = await db.collection("files").find({}).toArray()
-    const allFiles = [...videosFiles, ...filesFiles]
+    // Get all videos to delete from Cloudinary
+    const videos = await db.collection("files").find({}).toArray()
     
+    if (videos.length === 0) {
+      return NextResponse.json({ message: "No videos to delete" })
+    }
+
+    console.log(`Starting deletion of ${videos.length} videos...`)
+
     // Delete from Cloudinary
-    const deletePromises = allFiles.map(async (file) => {
-      const publicId = file.publicId || file.public_id
-      if (publicId) {
+    let cloudinaryDeletedCount = 0
+    let cloudinaryFailedCount = 0
+
+    for (const video of videos) {
+      if (video.publicId) {
         try {
-          const resourceType = (file.fileType || file.type) === 'video' ? 'video' : 'raw'
-          await cloudinary.uploader.destroy(publicId, { resource_type: resourceType })
-        } catch (error) {
-          console.error(`Failed to delete ${publicId} from Cloudinary:`, error)
+          await cloudinary.uploader.destroy(video.publicId, {
+            resource_type: video.resourceType || "video"
+          })
+          cloudinaryDeletedCount++
+          console.log(`Deleted from Cloudinary: ${video.publicId}`)
+        } catch (cloudinaryError) {
+          console.error(`Cloudinary deletion failed for ${video.publicId}:`, cloudinaryError)
+          cloudinaryFailedCount++
         }
       }
-    })
-    
-    await Promise.allSettled(deletePromises)
-    
-    // Delete all files from both collections
-    const videosResult = await db.collection("videos").deleteMany({})
-    const filesResult = await db.collection("files").deleteMany({})
-    const totalDeleted = videosResult.deletedCount + filesResult.deletedCount
-    
-    console.log(`Deleted ${videosResult.deletedCount} from videos collection`)
-    console.log(`Deleted ${filesResult.deletedCount} from files collection`)
-    console.log(`Total deleted: ${totalDeleted}`)
-    
+    }
+
+    // Delete all from database
+    const result = await db.collection("files").deleteMany({})
+
+    console.log(`Database deletion result: ${result.deletedCount} documents deleted`)
+    console.log(`Cloudinary: ${cloudinaryDeletedCount} deleted, ${cloudinaryFailedCount} failed`)
+
     return NextResponse.json({ 
       success: true, 
-      deletedCount: totalDeleted,
-      details: {
-        videosDeleted: videosResult.deletedCount,
-        filesDeleted: filesResult.deletedCount
-      },
-      message: `Successfully deleted ${totalDeleted} files`
+      message: "All videos deleted successfully",
+      stats: {
+        databaseDeleted: result.deletedCount,
+        cloudinaryDeleted: cloudinaryDeletedCount,
+        cloudinaryFailed: cloudinaryFailedCount
+      }
     })
-    
+
   } catch (error) {
-    console.error("Delete all error:", error)
-    return NextResponse.json(
-      { error: "Failed to delete all files", details: error.message }, 
-      { status: 500 }
-    )
+    console.error("Delete all videos error:", error)
+    return NextResponse.json({ 
+      error: "Failed to delete all videos", 
+      details: error.message 
+    }, { status: 500 })
   }
 }

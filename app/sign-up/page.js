@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useSignUp } from "@clerk/nextjs"
+import Navbar from "../../components/navbar"
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -86,6 +87,7 @@ export default function SignUpPage() {
   }
 
   return (
+    
     <main className="min-h-screen bg-neutral-900 text-foreground flex items-center">
       <div className="mx-auto w-full max-w-md px-4">
         <h1 className="text-2xl font-semibold text-primary">Create your account</h1>

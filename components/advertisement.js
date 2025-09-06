@@ -2,6 +2,7 @@
 "use client"
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 
 const COMPANIES = [
   {
@@ -44,7 +45,7 @@ const COMPANIES = [
 // SVG Placeholder Logo Component
 function PlaceholderLogo({ name, className }) {
   const initial = name.charAt(0).toUpperCase()
-  
+
   return (
     <div className={`flex items-center justify-center bg-gradient-to-br from-amber-600 to-amber-700 text-black font-bold text-xl ${className}`}>
       <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -55,13 +56,13 @@ function PlaceholderLogo({ name, className }) {
           </linearGradient>
         </defs>
         <rect width="100" height="100" fill={`url(#grad-${name})`} rx="8" />
-        <text 
-          x="50" 
-          y="50" 
-          textAnchor="middle" 
-          dominantBaseline="middle" 
-          fill="#000" 
-          fontSize="36" 
+        <text
+          x="50"
+          y="50"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="#000"
+          fontSize="36"
           fontWeight="bold"
           fontFamily="system-ui, sans-serif"
         >
@@ -102,7 +103,7 @@ function AdCard({ company }) {
           ) : (
             <PlaceholderLogo name={company.name} className="w-full h-full rounded-lg" />
           )}
-          
+
           {/* Hover Effect Overlay */}
           {isHovered && (
             <div className="absolute inset-0 bg-amber-600/10 rounded-lg flex items-center justify-center">
@@ -152,7 +153,13 @@ export default function Advertisement() {
         {/* Footer */}
         <div className="mt-6 pt-4 border-t border-neutral-800">
           <p className="text-xs text-neutral-500 text-center">
-            Interested in partnering with us? <span className="text-amber-400 hover:text-amber-300 cursor-pointer">Contact us</span>
+            Interested in partnering with us?
+            <Link
+              href="/contact"
+              className="text-amber-400 hover:text-amber-300 cursor-pointer"
+            >
+              Contact us
+            </Link>
           </p>
         </div>
       </div>

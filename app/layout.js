@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Suspense } from 'react'
 import DisableContextMenu from '../components/disableContextMenu'
+import Navbar from '../components/navbar'
 
 export const metadata = {
   title: 'MediaVault',
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
       <html lang="en" className="dark antialiased">
         <body className="bg-neutral-900 text-foreground font-sans">
           <DisableContextMenu />
+          <Navbar /> {/* ✅ Navbar will be shown on all pages */}
           <Suspense fallback={null}>
             {children}
           </Suspense>

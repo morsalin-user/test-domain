@@ -19,16 +19,22 @@ export default function HitCounter() {
     updateHits()
   }, [])
 
+  // Format number with leading zeros for display
+  const formatCount = (num) => {
+    if (num === null || num === undefined) return "…"
+    return num.toString().padStart(8, '0')
+  }
+
   return (
-    <section className="w-full mb-8">
-      <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6">
-        <div className="flex items-center space-x-2 mb-2">
+    <section className="w-full mb-8 mt-8">
+      <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6 text-center">
+        {/* <div className="flex items-center justify-center space-x-2 mb-2">
           <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
           <h2 className="text-lg font-semibold text-neutral-100">Page Visits</h2>
-        </div>
+        </div> */}
         <p className="text-sm text-neutral-300">
           Total visits:{" "}
-          <span className="text-amber-400 font-bold">{count ?? "…"}</span>
+          <span className="text-amber-400 font-bold">{formatCount(count)}</span>
         </p>
       </div>
     </section>

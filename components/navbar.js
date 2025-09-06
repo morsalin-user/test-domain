@@ -15,6 +15,8 @@ export default function Navbar() {
         <Link href="/" className="flex items-center">
           <img src="/logo.png" alt="Logo" className="h-12" />
         </Link>
+
+        {/* Mobile menu button */}
         <button
           className="md:hidden inline-flex items-center justify-center p-2 rounded bg-neutral-800 hover:bg-neutral-700"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -32,59 +34,45 @@ export default function Navbar() {
           )}
         </button>
 
+        {/* Desktop menu */}
         <div className="hidden md:flex gap-4 items-center">
-          <Link href="/" className="hover:text-amber-400">
-            Home
-          </Link>
+          <Link href="/" className="hover:text-amber-400">Home</Link>
+          <Link href="/about" className="hover:text-amber-400">About</Link>
+          <Link href="/contact" className="hover:text-amber-400">Contact</Link>
+
           <SignedIn>
-            <Link href="/dashboard" className="hover:text-amber-400">
-              Dashboard
-            </Link>
             {isAdmin && (
-              <Link href="/admin" className="hover:text-amber-400">
-                Admin
-              </Link>
+              <Link href="/admin" className="hover:text-amber-400">Admin</Link>
             )}
-            {/* Clerk's UserButton component includes sign out functionality */}
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
+
           <SignedOut>
-            <Link href="/sign-in" className="hover:text-amber-400">
-              Login
-            </Link>
-            <Link href="/sign-up" className="hover:text-amber-400">
-              Register
-            </Link>
+            <Link href="/sign-in" className="hover:text-amber-400">Login</Link>
+            <Link href="/sign-up" className="hover:text-amber-400">Register</Link>
           </SignedOut>
         </div>
       </nav>
 
+      {/* Mobile dropdown */}
       {open && (
         <div className="md:hidden border-t border-neutral-800 bg-neutral-900 px-4 py-3 space-y-2">
-          <Link href="/" className="block" onClick={() => setOpen(false)}>
-            Home
-          </Link>
+          <Link href="/" className="block" onClick={() => setOpen(false)}>Home</Link>
+          <Link href="/about" className="block" onClick={() => setOpen(false)}>About</Link>
+          <Link href="/contact" className="block" onClick={() => setOpen(false)}>Contact</Link>
+
           <SignedIn>
-            <Link href="/dashboard" className="block" onClick={() => setOpen(false)}>
-              Dashboard
-            </Link>
             {isAdmin && (
-              <Link href="/admin" className="block" onClick={() => setOpen(false)}>
-                Admin
-              </Link>
+              <Link href="/admin" className="block" onClick={() => setOpen(false)}>Admin</Link>
             )}
-            {/* UserButton for mobile menu */}
             <div className="pt-2">
               <UserButton afterSignOutUrl="/" />
             </div>
           </SignedIn>
+
           <SignedOut>
-            <Link href="/sign-in" className="block" onClick={() => setOpen(false)}>
-              Login
-            </Link>
-            <Link href="/sign-up" className="block" onClick={() => setOpen(false)}>
-              Register
-            </Link>
+            <Link href="/sign-in" className="block" onClick={() => setOpen(false)}>Login</Link>
+            <Link href="/sign-up" className="block" onClick={() => setOpen(false)}>Register</Link>
           </SignedOut>
         </div>
       )}
