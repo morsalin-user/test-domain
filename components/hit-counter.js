@@ -34,10 +34,7 @@ export default function HitCounter() {
           {digits.map((digit, idx) => (
             <div
               key={idx}
-              className="w-10 h-14 sm:w-12 sm:h-16 flex items-center justify-center 
-                         bg-neutral-800 border border-neutral-700 rounded-md 
-                         text-2xl sm:text-3xl font-bold text-amber-400 
-                         shadow-md shadow-amber-600/10"
+              className="bg-black text-amber-500 px-2 py-1 rounded text-sm font-mono font-bold border border-amber-600 select-none"
             >
               {digit}
             </div>
@@ -47,3 +44,4 @@ export default function HitCounter() {
     </section>
   )
 }
+
