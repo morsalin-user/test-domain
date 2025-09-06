@@ -30,11 +30,11 @@ export default function HitCounter() {
   return (
     <section className="w-full mb-8 mt-8">
       <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6 text-center">
-        <div className="flex justify-center space-x-2">
+        <div className="flex justify-center space-x-1">
           {digits.map((digit, idx) => (
             <div
               key={idx}
-              className="text-black bg-amber-600/10 font-mono font-bold text-2xl w-15 h-14 flex items-center justify-center rounded-md shadow-md"
+              className="text-black bg-amber-500 font-mono font-bold text-2xl w-15 h-14 flex items-center justify-center rounded-md shadow-md"
             >
               {digit}
             </div>
